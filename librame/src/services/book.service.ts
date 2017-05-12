@@ -24,3 +24,30 @@ export class BookService {
     return this._db.remove(book);
   }
 
+  getAll() {
+
+    if (!this._books) {
+      return this._db.allDocs({ include_docs: true})
+        .then(docs => {
+
+          // Each row has a .doc object and we just want to send an
+          // array of book objects back to the calling controller,
+          // so let's map the array to contain just the .doc objects.
+
+          this._books = docs.rows.map(row => {
+            // Dates are not automatically converted from a string.
+            row.doc.Date = new Date(row.doc.Date);
+            return row.doc;
+          });
+
+          // Listen for changes on the database.
+          this._db.changes({ live: true, since: 'now', include_docs: true})
+            .on('change', this.onDatabaseChange);
+
+          return this._books;
+        });
+    } else {
+      // Return cached data as a promise
+      return Promise.resolve(this._books);
+    }
+  }
