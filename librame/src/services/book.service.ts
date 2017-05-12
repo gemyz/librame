@@ -20,3 +20,7 @@ export class BookService {
     return this._db.put(book);
   }
 
+  delete(book) {
+    return this._db.remove(book);
+  }
+
