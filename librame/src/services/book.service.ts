@@ -16,3 +16,7 @@ export class BookService {
     return this._db.post(book);
   }
 
+  update(book) {
+    return this._db.put(book);
+  }
+
