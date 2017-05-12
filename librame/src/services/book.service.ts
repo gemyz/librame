@@ -11,3 +11,8 @@ export class BookService {
     PouchDB.plugin(cordovaSqlitePlugin);
     this._db = new PouchDB('books.db', {adapter: 'cordova-sqlite'});
   }
+
+  add(book) {
+    return this._db.post(book);
+  }
+
