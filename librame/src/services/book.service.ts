@@ -51,3 +51,33 @@ export class BookService {
       return Promise.resolve(this._books);
     }
   }
+
+  private onDatabaseChange = (change) => {
+    let index = this.findIndex(this._books, change.id);
+    let book = this._books[index];
+
+    if (change.deleted) {
+      if (book) {
+        this._books.splice(index, 1); // delete
+      }
+    } else {
+      change.doc.Date = new Date(change.doc.Date);
+      if (book && book._id === change.id) {
+        this._books[index] = change.doc; // update
+      } else {
+        this._books.splice(index, 0, change.doc) // insert
+      }
+    }
+  }
+
+// Binary search, the array is by default sorted by _id.
+  private findIndex(array, id) {
+    let low = 0, high = array.length, mid;
+    while (low < high) {
+      mid = (low + high) >>> 1;
+      array[mid]._id < id ? low = mid + 1 : high = mid
+    }
+    return low;
+  }
+
+}
